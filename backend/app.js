@@ -12,6 +12,8 @@ import userRouter from './Routes/User.js'
 import rateLimit from 'express-rate-limit'
 import workoutRouter from './Routes/Workout.js'
 import IsLogin from './Middlewares/IsLogin.js'
+import uploadRouter from './Routes/Upload.js'
+import exerciseRouter from './Routes/Exercise.js'
 const __filename = fileURLToPath(import.meta.url)
 export const __dirname = path.dirname(__filename)
 const limiter = rateLimit({
@@ -27,7 +29,9 @@ app.use(morgan('dev'))
 app.use(exportValidation)
 app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
-app.use('/api/workouts', IsLogin,workoutRouter)
+app.use('/api/exercises', IsLogin, exerciseRouter)
+app.use('/api/workouts', IsLogin, workoutRouter)
+app.use('/api/upload', IsLogin, uploadRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 app.use((req,res,next)=>{
     next(new HandleERROR('Not Found', 404))

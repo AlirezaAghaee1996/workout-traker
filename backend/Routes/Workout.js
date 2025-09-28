@@ -15,6 +15,30 @@ export default workoutRouter;
  * @swagger
  * components:
  *   schemas:
+ *     ExerciseRef:
+ *       type: object
+ *       required:
+ *         - exerciseId
+ *         - sets
+ *         - restTime
+ *       properties:
+ *         exerciseId:
+ *           type: string
+ *           description: MongoDB ObjectId of the exercise
+ *           example: 650f3b9d8f3e2c001c9e4e77
+ *         sets:
+ *           type: number
+ *           description: Number of sets for the exercise
+ *           example: 4
+ *         weight:
+ *           type: number
+ *           description: Optional weight used (kg)
+ *           example: 20
+ *         restTime:
+ *           type: number
+ *           description: Rest time in seconds between sets
+ *           example: 90
+ *
  *     Workout:
  *       type: object
  *       required:
@@ -30,15 +54,15 @@ export default workoutRouter;
  *         title:
  *           type: string
  *           description: Title of the workout
- *           example: Chest Day
+ *           example: Push Day
  *         description:
  *           type: string
  *           description: Short description of the workout
- *           example: A workout focusing on chest muscles
+ *           example: A workout focusing on chest, shoulders, and triceps
  *         duration:
  *           type: number
  *           description: Duration of the workout in minutes
- *           example: 60
+ *           example: 75
  *         userId:
  *           type: string
  *           description: MongoDB ObjectId of the user
@@ -46,9 +70,7 @@ export default workoutRouter;
  *         exercises:
  *           type: array
  *           items:
- *             type: string
- *             description: MongoDB ObjectId of an exercise
- *           example: ["650f3b9d8f3e2c001c9e4b01"]
+ *             $ref: '#/components/schemas/ExerciseRef'
  *         createdAt:
  *           type: string
  *           format: date-time
