@@ -11,38 +11,139 @@ export default authRouter;
 /**
  * @swagger
  * tags:
- *   name: Auth
- *   description: Authentication and Authorization APIs
+ *   - name: Auth
+ *     description: Authentication and Authorization APIs
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AuthRequest:
+ *       type: object
+ *       required:
+ *         - phoneNumber
+ *       properties:
+ *         phoneNumber:
+ *           type: string
+ *           example: "+989123456789"
+ *
+ *     LoginWithPasswordRequest:
+ *       type: object
+ *       required:
+ *         - phoneNumber
+ *         - password
+ *       properties:
+ *         phoneNumber:
+ *           type: string
+ *           example: "+989123456789"
+ *         password:
+ *           type: string
+ *           example: "StrongPass123"
+ *
+ *     LoginWithOtpRequest:
+ *       type: object
+ *       required:
+ *         - phoneNumber
+ *         - code
+ *       properties:
+ *         phoneNumber:
+ *           type: string
+ *           example: "+989123456789"
+ *         code:
+ *           type: string
+ *           example: "123456"
+ *
+ *     ResendCodeRequest:
+ *       type: object
+ *       required:
+ *         - phoneNumber
+ *       properties:
+ *         phoneNumber:
+ *           type: string
+ *           example: "+989123456789"
+ *
+ *     ForgetPasswordRequest:
+ *       type: object
+ *       required:
+ *         - phoneNumber
+ *         - password
+ *         - code
+ *       properties:
+ *         phoneNumber:
+ *           type: string
+ *           example: "+989123456789"
+ *         password:
+ *           type: string
+ *           description: "Must be at least 8 chars with uppercase, lowercase, and number"
+ *           example: "NewPass123"
+ *         code:
+ *           type: string
+ *           example: "123456"
+ *
+ *     AuthResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         message:
+ *           type: string
+ *           example: "SMS sent successfully"
+ *         data:
+ *           type: object
+ *           properties:
+ *             userExist:
+ *               type: boolean
+ *             passwordExist:
+ *               type: boolean
+ *
+ *     LoginResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         data:
+ *           type: object
+ *           properties:
+ *             user:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 phoneNumber:
+ *                   type: string
+ *                 fullName:
+ *                   type: string
+ *             token:
+ *               type: string
+ *               description: JWT token
+ *               example: "eyJhbGciOiJIUzI1NiIsInR..."
  */
 
 /**
  * @swagger
  * /api/auth:
  *   post:
- *     summary: Start authentication with phone number
- *     description: Send an SMS code if the user does not exist or does not have a password.
+ *     summary: Request authentication (send SMS if user has no password)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - phoneNumber
- *             properties:
- *               phoneNumber:
- *                 type: string
- *                 example: "09123456789"
+ *             $ref: '#/components/schemas/AuthRequest'
  *     responses:
  *       200:
- *         description: SMS sent successfully or user already has password.
+ *         description: Authentication initiated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
  *       400:
- *         description: Invalid phone number or SMS sending failed.
- */
-
-/**
- * @swagger
+ *         description: SMS sending failed
+ *
  * /api/auth/login-password:
  *   post:
  *     summary: Login with phone number and password
@@ -52,55 +153,39 @@ export default authRouter;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - phoneNumber
- *               - password
- *             properties:
- *               phoneNumber:
- *                 type: string
- *                 example: "09123456789"
- *               password:
- *                 type: string
- *                 example: "myPassword123"
+ *             $ref: '#/components/schemas/LoginWithPasswordRequest'
  *     responses:
  *       200:
- *         description: Successful login with JWT token.
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
  *       400:
- *         description: Invalid credentials or missing fields.
- */
-
-/**
- * @swagger
+ *         description: Invalid credentials or password not found
+ *       404:
+ *         description: User not found
+ *
  * /api/auth/login-otp:
  *   post:
- *     summary: Login with OTP
+ *     summary: Login with phone number and OTP code
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - phoneNumber
- *               - code
- *             properties:
- *               phoneNumber:
- *                 type: string
- *                 example: "09123456789"
- *               code:
- *                 type: string
- *                 example: "123456"
+ *             $ref: '#/components/schemas/LoginWithOtpRequest'
  *     responses:
  *       200:
- *         description: Successful login with JWT token.
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
  *       400:
- *         description: Invalid code or phone number.
- */
-
-/**
- * @swagger
+ *         description: Invalid code
+ *
  * /api/auth/resend-code:
  *   post:
  *     summary: Resend OTP code
@@ -110,51 +195,28 @@ export default authRouter;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - phoneNumber
- *             properties:
- *               phoneNumber:
- *                 type: string
- *                 example: "09123456789"
+ *             $ref: '#/components/schemas/ResendCodeRequest'
  *     responses:
  *       200:
- *         description: SMS sent successfully.
+ *         description: SMS resent successfully
  *       400:
- *         description: Failed to send SMS.
- */
-
-/**
- * @swagger
+ *         description: SMS sending failed
+ *
  * /api/auth/forget-password:
  *   post:
- *     summary: Reset password with phone number, new password, and OTP code
+ *     summary: Reset password using OTP
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - phoneNumber
- *               - password
- *               - code
- *             properties:
- *               phoneNumber:
- *                 type: string
- *                 example: "09123456789"
- *               password:
- *                 type: string
- *                 example: "newPassword123"
- *               code:
- *                 type: string
- *                 example: "123456"
+ *             $ref: '#/components/schemas/ForgetPasswordRequest'
  *     responses:
  *       200:
- *         description: Password updated successfully.
+ *         description: Password updated successfully
  *       400:
- *         description: Invalid request or code.
+ *         description: Invalid input or SMS verification failed
  *       404:
- *         description: User not found.
+ *         description: User not found
  */

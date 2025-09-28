@@ -1,5 +1,5 @@
 const IsLogin = (req, res, next) => {
-  if (!req.role || !req.userId) {
+  if (!req.userId) {
     return res
       .status(403)
       .json({
