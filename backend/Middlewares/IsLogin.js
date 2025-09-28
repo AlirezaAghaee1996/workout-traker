@@ -1,0 +1,12 @@
+const IsLogin = (req, res, next) => {
+  if (!req.role || !req.userId) {
+    return res
+      .status(403)
+      .json({
+        message: "you are not authorized to access this resource",
+        success: false,
+      });
+  }
+  next();
+};
+export default IsLogin;
