@@ -4,9 +4,7 @@ import bcryptjs from "bcryptjs";
 
 export const getOne = catchAsync(async (req, res, next) => {
   const features = new ApiFeatures(User, req.query, req.role)
-    .addManualFilters(
-       { _id: req.userId }
-    )
+    .addManualFilters({ _id: req.userId })
     .filter()
     .sort()
     .limitFields()
@@ -18,7 +16,7 @@ export const getOne = catchAsync(async (req, res, next) => {
 
 export const update = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const { fullName = null, password = null} = req.body;
+  const { fullName = null, password = null } = req.body;
   if (id != req.userId) {
     return next(new HandleERROR("Unauthorized", 401));
   }
@@ -27,7 +25,8 @@ export const update = catchAsync(async (req, res, next) => {
   if (password && !passReg.test(password)) {
     return next(
       new HandleERROR(
-        "Password must be at least 8 characters long and contain uppercase, lowercase letters and numbers",
+        `Password must be at least 8 characters long and contain uppercase,
+         lowercase letters and numbers`,
         400
       )
     );
